@@ -1,0 +1,105 @@
+{% include "admin/header.html" %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Create Campaign</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/admin/">Home</a></li>
+          <li class="breadcrumb-item active">Create Campaign</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+  
+
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Create Campaign Form</h5>
+            <!-- Floating Labels Form -->
+            <form class="row g-3" action="/campaction" method="post">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" name="name" class="form-control" id="floatingName" placeholder="Campaign Name" required>
+                        <label for="floatingName">Campaign Name</label>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="form-floating">
+                        <input type="date" name="date" class="form-control" id="floatingDate" required>
+                        <label for="floatingDate">Date</label>
+                    </div>
+                </div>
+                
+                <div class="col-md-5">
+                    <div class="form-floating">
+                        <input type="number" name="starttime" class="form-control" id="starttime" min="0" max="23" required>
+                        <label for="starttime">Start Time (hours)</label>
+                    </div>
+                </div>
+                
+                <div class="col-md-5">
+                    <div class="form-floating">
+                        <input type="number" name="endtime" class="form-control" id="endtime" min="0" max="23" required>
+                        <label for="endtime">End Time (hours)</label>
+                    </div>
+                </div>
+                
+                <div class="col-md-12">
+                    <div class="form-floating">
+                        <input type="text" name="designation" class="form-control" id="floatingCity" placeholder="Designation" required>
+                        <label for="floatingCity">Designation</label>
+                    </div>
+                </div>
+                
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                </div>
+            </form><!-- End floating Labels Form -->
+        </div>
+    </div>
+    
+    
+</main>
+
+<script type="text/javascript">
+
+    
+
+
+    /////////////////function for time 
+  
+    function setendtime(stime) {
+    // Parse the selected start time as an integer
+    stime = parseInt(stime);
+
+    // Get the end time select element
+    var selectElement = document.getElementById("endtime");
+
+    // Get the value of the selected end time
+    var endtime = parseInt(selectElement.value);
+
+    // If the selected start time is greater than or equal to the selected end time,
+    // select the next option after the selected start time in the end time select element
+    if (stime >= endtime) {
+        selectElement.options[stime + 1].selected = true;
+    }
+
+    // Enable all options from the selected start time to 24
+    for (var i = stime; i <= 24; i++) {
+        document.getElementById(i).removeAttribute("disabled");
+    }
+
+    // Disable all options from 1 to the selected start time
+    for (var i = 1; i <= stime; i++) {
+        document.getElementById(i).setAttribute("disabled", "disabled");
+    }
+}
+ 
+  </script>
+
+
+{% include "admin/footer.html" %}
