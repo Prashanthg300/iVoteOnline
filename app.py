@@ -1,20 +1,13 @@
-
 import csv
 from urllib import response
 from flask import Flask, render_template,request,session,g,jsonify
 import mysql.connector
-
 import cv2
 import numpy as np
 from PIL import Image,ImageTk
 from datetime import datetime, timedelta
-
 import time
-
-
 import os
-
-
 
 current_date = datetime.now()
 today = current_date.strftime("%Y-%m-%d")
@@ -26,15 +19,6 @@ tom = current_date + timedelta(days=2)
 tommorow = tom.strftime('%Y-%m-%d')
 
 print(today,ctime)
-
-
-
-
-
-
-
-
-
 
 app = Flask(__name__)
 
@@ -56,7 +40,6 @@ def insert_record(query,data):
 	crsr.close()
 	cnx.close()	
 
-
 def update_record(query, data):
     cnx = mysql.connector.connect(**config)
     cursor = cnx.cursor()
@@ -66,7 +49,6 @@ def update_record(query, data):
     cnx.commit()
     cursor.close()
     cnx.close()
-
 
 def select_records(query):
     cnx = mysql.connector.connect(**config)
@@ -80,8 +62,6 @@ def select_records(query):
     cnx.close()
     return rows
 
-
-
 def count_records(query):
     cnx = mysql.connector.connect(**config)
     cursor = cnx.cursor()
@@ -94,11 +74,7 @@ def count_records(query):
     cnx.close()
     return len(rows)
 
-
-
-
 # -----------------Common Functions--------------------
-
 
 @app.route("/")
 def index():
@@ -113,42 +89,25 @@ def about():
 def logaction():
 	email=request.form['email']
 	password=request.form['password']
-
-
 	sql5="select * from login where email='"+email+"' and password='"+password+"'"
-
-
 	data=select_records(sql5)
 	if len(data)>0:
 		status=data[0][2]
 		usertype=data[0][3]
 		if(usertype==0):
-			
-			
 			return '''
 							<script>
 							alert('Admin Login Successful!');
 							window.location.href = '/admin/';
 							</script>
-		
-		
 								'''
-        
-
-			
 		elif( usertype == 1):
 			
 			if(status==1):
 				session['email'] = email
-
 				sql4="select * from registration where email='"+email+"'"
-
-
 				data=select_records(sql4)
-
 				session['user']=data[0]
-
-					
 				return '''
 
 							<script>
@@ -156,10 +115,7 @@ def logaction():
 							window.location.href = '/user/';
 							</script>
 							'''
-
-			    
-			else:
-					
+			else:	
 				return '''
 							<script>
 							alert('Student inactive');
@@ -179,16 +135,11 @@ def logaction():
 							alert('Login Failed! Email and password doesnt matched');
 							window.location.href = '/';
 							</script>
-
-
 					'''
 
 @app.route("/user/")
 def userindex():
-
 	email=session['email']
-
-
 	count=[]
 	sql1="select * from contest where cid in (select cid from electoralroll e,registration r where e.admno=r.admno and r.email='"+email+"')"
 	count.append(count_records(sql1))
@@ -205,14 +156,10 @@ def userindex():
 	sql6="SELECT * FROM complaints WHERE email='"+email+"' ORDER BY reply DESC,time ASC"
 	data=select_records(sql6)
 
-
-
 	return render_template("user/index.html",count=count,rows=data)	
 
 @app.route("/admin/")
 def adminindex():
-
-
 	count=[]
 
 	sql1="select * from login where status=1 and usertype=1"
@@ -227,11 +174,8 @@ def adminindex():
 	sql4="select * from complaints"
 	count.append(count_records(sql4))
 
-
 	sql6="SELECT stdid, email, admno, fname, lname, dob, gender, rollno, semester, branch, course, phn, address, state FROM `registration` WHERE `email` IN (SELECT `email` FROM `login` WHERE `status` = '0')"
 	data=select_records(sql6)
-
-
 
 	return render_template("admin/index.html",count=count,rows=data)
 	
@@ -261,9 +205,7 @@ def regaction():
 	password=request.form['password']
 	cpassword=request.form['cpassword']
 
-
 	sql4="select * from registration where email='"+email+"'or admno='"+admno+"'"
-
 
 	data=select_records(sql4)
 	if len(data)>0:
@@ -276,17 +218,12 @@ def regaction():
 	else:
 		
 		if password == cpassword:
-			# array=[fname,lname,email,admno,phone,dob,branch,sem,rollno,dist,city,pin,course,gender,password,cpassword]
 			
 			sql="INSERT INTO registration(email, admno, fname, lname, dob, gender, rollno, semester, branch, course, phn, address, state, district, city, pincode) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
-			# sql = "INSERT INTO login(email, password, usertype) VALUES (%s,%s,%s)"
-
 			data = (email, admno, fname, lname, dob, gender, rollno, sem, branch, course, phone, address, state, dist, city, pin)
-
 
 			insert_record(sql,data)
 
-		
 			sql2 = "INSERT INTO login(email, password, status, usertype) VALUES(%s,%s,%s,%s)"
 			data2 = (email, password, 0, 1)
 
@@ -325,17 +262,12 @@ def regaction():
 			cap.release()
 			cv2.destroyAllWindows()
 
-
-
-
 			return '''
 							<script>
 							alert('Registered successfully!');
 							window.location.href = '/';
 							</script>
 							'''
-
-
 		else:
 			return '''
 						<script>
@@ -348,13 +280,7 @@ def regaction():
 def register():
 	return render_template("Register.html")
 
-# -----------------Common Functions--------------------
-
-
-
 # -----------------Admin Functions--------------------
-
-
 
 @app.route("/userlist/")
 def userlist():
@@ -402,7 +328,6 @@ def replyaction():
         </script>
     '''
 
-
 @app.route("/campaction",methods=["POST"])
 def campaction():
 	name=request.form['name']
@@ -410,7 +335,6 @@ def campaction():
 	starttime=request.form['starttime']
 	endtime=request.form['endtime']
 	designation=request.form['designation']
-
 
 	sql7= "INSERT INTO contest(name, date, starttime, endtime, designation) VALUES (%s,%s,%s,%s,%s)"
 
@@ -424,7 +348,6 @@ def campaction():
 				window.location.href = '/upcomingcampaign/';
 				</script>
 				'''
-
 @app.route("/activecampaign/")
 def activecampaignindex():
 	
@@ -447,9 +370,6 @@ def viewresults():
     data = select_records(sql8)	
     return render_template("admin/result.html", rows=data)
 
-
-
-
 @app.route("/managecampaign/",methods=['GET','POST'])
 def managecampaign():
 	id = request.args['id']
@@ -465,7 +385,6 @@ def managecampaign():
 
 	return render_template("admin/managecampaign.html",rows=data[0],c=candidates,voters=v)
 
-
 @app.route("/addcandidate",methods=["POST"])
 def addcandidate():
 	id=request.form['id']
@@ -473,13 +392,9 @@ def addcandidate():
 	symbol = request.files['symbol']
 	filename=symbol.filename
 	file_extension = os.path.splitext(filename)[1]
-
 	name=admno+str(id)+file_extension
-
 	file_path = os.path.join('static/symbols', name)
 	symbol.save(file_path)
-
-
 	
 	sql1="SELECT * FROM registration where admno ='"+admno+"' and email in (select email from login where status=1);"
 	count=select_records(sql1)
@@ -489,14 +404,11 @@ def addcandidate():
 
 	if(len(count)>0 and len(cc)<1):
 		sql7= "INSERT INTO candidates(cid, admno,symbol) VALUES (%s,%s,%s)"
-
 		data = (id, admno,name)
-
 		insert_record(sql7,data)
 
 		sql8="SELECT * FROM `contest` WHERE cid ='"+id+"';"
 		data=select_records(sql8)
-		
 
 		sql9="SELECT * FROM registration r,candidates c WHERE c.admno=r.admno and cid ='"+id+"';"
 		candidates=select_records(sql9)	
@@ -538,8 +450,6 @@ def addvoter():
 
 	return render_template("admin/managecampaign.html",rows=data[0],c=candidates,voters=v)
 
-
-
 @app.route("/addvoterfile",methods=["POST"])
 def addvoterfile():
 	id=request.form['id']
@@ -547,17 +457,14 @@ def addvoterfile():
 
 	if file.filename == '':
 		return jsonify({'error': 'No selected file'}), 400
-
 	file.save(f'static/files/{file.filename}')
-
 	data_list = []
 	with open('static/files/'+file.filename, 'r', newline='') as csvfile:
 		csv_reader = csv.reader(csvfile)
-		header = next(csv_reader)  # Skip the header row
+		header = next(csv_reader)  
 		for row in csv_reader:
 			data_list.append(row)
     
-
 	for row in data_list:
 		sql1="SELECT * FROM registration where admno ='"+row[0]+"' and email in (select email from login where status=1);"
 		count=select_records(sql1)
@@ -580,14 +487,6 @@ def addvoterfile():
 	v=select_records(sql3)	
 
 	return render_template("admin/managecampaign.html",rows=data[0],c=candidates,voters=v)
-		
-
-
-
-
-
-	
-
 
 @app.route("/upcomingcampaign/")
 def upcomingcampaignindex():
@@ -595,7 +494,6 @@ def upcomingcampaignindex():
 	sql8="SELECT `cid`, `name`, `date`, `starttime`, `endtime`, `status`, `designation` FROM `contest` WHERE status = 1 and ( (date>'"+today+"') or (date='"+today+"' and starttime>"+ctime+"))   ORDER BY date ASC;"
 	data=select_records(sql8)	
 	return render_template("admin/upcomingcampaign.html",rows=data,query=sql8)
-
 
 @app.route("/completedcampaign/")
 def completedcampaignindex():
@@ -618,13 +516,10 @@ def campaignindex():
 @app.route("/markascomplete/",methods=['GET','POST'])
 def markascomplete():
 	if request.method=='GET':
-		
 		id = request.args['id']
-		
 		sql7="UPDATE contest set status=%s where cid=%s"
 		data=(2,id)
 		update_record(sql7, data)
-
 		sql8="SELECT `cid`, `name`, `date`, `starttime`, `endtime`, `status`, `designation` FROM `contest` WHERE status = 2 or ( (date<'"+today+"') or (date='"+today+"' and endtime>'"+ctime+"'))   ORDER BY date ASC;"
 		data=select_records(sql8)
 		return render_template("admin/completedcampaign.html",rows = data)
@@ -636,13 +531,10 @@ def markascomplete():
 @app.route("/rejectcampaign/",methods=['GET','POST'])
 def rejectcampaign():
 	if request.method=='GET':
-		
 		id = request.args['id']
-		
 		sql7="UPDATE contest set status=%s where cid=%s"
 		data=(-1,id)
 		update_record(sql7, data)
-
 		sql8="SELECT `cid`, `name`, `date`, `starttime`, `endtime`, `status`, `designation` FROM `contest` WHERE status = -1 ORDER BY date ASC;"
 		data=select_records(sql8)
 		return render_template("admin/inactivecampaign.html",rows = data)
@@ -650,9 +542,6 @@ def rejectcampaign():
 		sql8="SELECT `cid`, `name`, `date`, `starttime`, `endtime`, `status`, `designation` FROM `contest` WHERE status = -1 ORDER BY date ASC;"
 		data=select_records(sql8)
 		return render_template("admin/inactivecampaign.html",rows = data)
-
-
-
 
 @app.route("/suspenduser/",methods=['GET','POST'])
 def suspenduser():
@@ -702,8 +591,6 @@ def userverify():
 		clf= cv2.face.LBPHFaceRecognizer_create()
 		clf.train(faces,ids)
 		clf.write("clf.xml")
-		
-		
 
 		sql6="SELECT stdid, email, admno, fname, lname, dob, gender, rollno, semester, branch, course, phn, address, state FROM `registration` WHERE `email` IN (SELECT `email` FROM `login` WHERE `status` = '1')"
 		data=select_records(sql6)
@@ -713,18 +600,7 @@ def userverify():
 		data=select_records(sql6)
 		return render_template("admin/userlist.html",rows=data)
 
-# -----------------------------admin-------------------------
-
-
-
-
-
-
-
 # -----------------User Functions--------------------
-
-
-
 
 @app.route("/complaintaction",methods=["POST"])
 def complaintaction():
@@ -732,14 +608,9 @@ def complaintaction():
 	subject=request.form['subject']
 	email=session['email']
 
-
-
 	sql7= "INSERT INTO complaints(title,content,email) VALUES (%s,%s,%s)"
-
 	data = (title, subject,email)
-
 	insert_record(sql7,data)
-
 	return '''
 				<script>
 				alert('Complaint submitted!');
@@ -764,8 +635,6 @@ def profile():
 @app.route("/update_profile",methods=["POST"])
 def update_profile():
 	email=session['email']
-
-	# admno = session['admno']
 	fname=request.form['fname']
 	lname=request.form['lname']
 	dob=request.form['dob']
@@ -775,10 +644,8 @@ def update_profile():
 	branch=request.form['branch']
 	course=request.form['course']
 	phone=request.form['phone']
-	# sql7="UPDATE registration set fname='"+fname+"'lname='"+lname+"'dob='"+dob+"'gender='"+gender+"'rollno='"+rollno+"'semester='"+sem+"'branch='"+branch+"'course='"+course+"'phone='"+phone+"' where email='"+email+"'"
 	sql7="UPDATE registration set fname=%s,lname=%s,dob=%s,gender=%s,rollno=%s,semester=%s,branch=%s,course=%s,phn=%s where email=%s"
 	data =(fname, lname, dob, gender, rollno, sem, branch, course, phone,email)
-
 
 	update_record(sql7, data)
 	return '''
@@ -791,15 +658,10 @@ def update_profile():
 def activecontestindex():
 	user=session['user']
 	admno=user[2]
-
 	print(ctime)
 	sql8="SELECT cid, name, date, starttime, endtime, status, designation FROM contest WHERE status = 1 and date='"+today+"' and starttime<='"+ctime+"' and endtime>'"+ctime+"' and cid in (select cid from electoralroll where admno='"+admno+"' and candidateid = 0) ORDER BY date ASC"
 	print(sql8)
 	data1=select_records(sql8)
-
-	# sql2="SELECT cid, name, date, starttime, endtime, status, designation FROM contest WHERE status = 1 and date='"+today+"' and starttime<'"+ctime+"' and endtime>'"+ctime+"' and cid in (select cid from electoralroll where admno='"+admno+"' and candidateid = 0) ORDER BY date ASC"
-	# data2=select_records(sql2)
-	
 	return render_template("user/activecontest.html",rows=data1)
 
 @app.route("/completedcontest/")
@@ -808,9 +670,7 @@ def completedcontestindex():
 	admno=user[2]
 	sql8="SELECT cid, name, date, starttime, endtime, status, designation  FROM contest WHERE (status = 2) OR (date < '"+today+"' OR (date = '"+today+"' AND endtime < "+ctime+"))OR (cid IN (SELECT cid FROM electoralroll WHERE candidateid != 0 AND admno ='"+admno+"')) ORDER BY date ASC"	
 	data1=select_records(sql8)
-
 	return render_template("user/completedcontest.html",rows=data1)
-
 
 @app.route("/upcomingcontest/")
 def upcomingcontestindex():
@@ -818,10 +678,6 @@ def upcomingcontestindex():
 	admno=user[2]
 	sql8="SELECT cid, name, date, starttime, endtime, status, designation FROM contest WHERE status = 1 and ( (date>'"+today+"') or (date='"+today+"' and starttime>"+ctime+")) and cid in (select cid from electoralroll where admno='"+admno+"' and candidateid = 0) ORDER BY date ASC"
 	data1=select_records(sql8)
-
-	# sql2="SELECT cid, name, date, starttime, endtime, status, designation FROM contest WHERE status = 1 and date='"+today+"' and starttime<'"+ctime+"' and endtime>'"+ctime+"' and cid in (select cid from electoralroll where admno='"+admno+"' and candidateid = 0) ORDER BY date ASC"
-	# data2=select_records(sql2)
-	
 	return render_template("user/upcomingcontest.html",rows=data1)
 
 @app.route("/addcomplaint/")
@@ -842,9 +698,6 @@ def detectfaceindex():
 
     # Initialize LBPH face recognizer
     clf = cv2.face.LBPHFaceRecognizer_create()
-    # if clf.empty():
-    #     print("Error: Unable to load LBPH face recognizer model.")
-    #     return "Error: Unable to load LBPH face recognizer model."
 
     # Load LBPH face recognizer model
     clf.read("clf.xml")
@@ -871,17 +724,14 @@ def detectfaceindex():
 
         if data[1] == True:
             time.sleep(10)
-
             videoCap.release()
             cv2.destroyAllWindows()
-
             return "<script>alert('Face verification Successfully!!');window.location.href = '/gotovote?id=" + cid + "';</script>"
 
         elapsed_time = time.time() - start_time
         if elapsed_time > 20:
             videoCap.release()
             cv2.destroyAllWindows()
-
             return '''
                     <script>
                     alert('Time Out..!! Contact Admin about the same');
@@ -892,7 +742,6 @@ def detectfaceindex():
         if cv2.waitKey(1) == 27:
             videoCap.release()
             cv2.destroyAllWindows()
-
             return '''
                     <script>
                     alert('Time Out..!! Contact Admin about the same');
@@ -900,18 +749,11 @@ def detectfaceindex():
                     </script>
                     '''
 
-
-
-	
-
-
 @app.route("/gotovote/",methods=['GET','POST'])
 def gotovote():
 	user=session['user']
 	id=user[0]
 	cid= request.args['id']
-
-
 
 	sql8="SELECT * from candidates c,registration r where r.admno=c.admno and c.cid='"+cid+"'"
 	candidates=select_records(sql8)
@@ -920,11 +762,7 @@ def gotovote():
 	sql2="SELECT * from contest where cid='"+cid+"'"
 	contest=select_records(sql2)
 
-
 	return render_template("user/castvote.html",candidates=candidates,contest=contest[0])
-
-
-
 
 @app.route("/markvote/",methods=['GET','POST'])
 def markvote():
@@ -932,13 +770,9 @@ def markvote():
 	admno=user[2]
 	candidateid= request.args['id']
 	cid= request.args['cid']
-
 	sql7="UPDATE electoralroll set candidateid=%s where admno=%s and cid=%s"
 	data=(candidateid,admno,cid)
 	update_record(sql7, data)
-
-
-
 
 	return '''
 						<script>
@@ -946,10 +780,6 @@ def markvote():
 						window.location.href = '/activecontest/';
 						</script>
 						'''
-
-
-
-
 
 @app.route("/signout/")
 def signout():
@@ -959,30 +789,17 @@ def signout():
 def draw_boundray(img,classifier,scaleFactor,minNeighbors,color,text,clf):
 	gray_image=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 	featuers=classifier.detectMultiScale(gray_image,scaleFactor,minNeighbors)
-
 	user=session['user']
 	userid=user[0]
-
 	flag=False
-
-
 	coord=[]
-	
 	for (x,y,w,h) in featuers:
 		cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),3)#croping the face
 		id,predict=clf.predict(gray_image[y:y+h,x:x+w])
-
 		confidence=int((100*(1-predict/300)))
-
-		
-
-		# print(id==userid)
-
 		if confidence > 80:
 			if userid==id:
 				flag=True
-		
-
 		coord=[x,y,w,y]
 	
 	return flag
@@ -990,15 +807,6 @@ def draw_boundray(img,classifier,scaleFactor,minNeighbors,color,text,clf):
 def recognize(img,clf,faceCascade):
 	flag=draw_boundray(img,faceCascade,1.1,10,(255,25,255),"Face",clf)
 	return (img,flag)
-
-
-    
-
-
-
-# -------------------------------------------------------------
-
-
 
 if __name__ == "__main__":
 	app.run()
