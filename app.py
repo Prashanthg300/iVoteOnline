@@ -74,7 +74,7 @@ def count_records(query):
     cnx.close()
     return len(rows)
 
-# -----------------Common Functions--------------------
+# -----------------Common Functions-------------------
 
 @app.route("/")
 def index():
