@@ -68,7 +68,7 @@ The literature survey includes several studies and papers that provide a foundat
 
 Below are some screenshots demonstrating the key functionalities of iVoteOnline:
 
- **Home Page**
+- **Home Page**
   ![Home Page](Screenshots/1%20Home%20Page.png) 
   
 - **User Registration Page**
