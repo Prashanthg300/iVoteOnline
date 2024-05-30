@@ -72,17 +72,19 @@ Below are some screenshots demonstrating the key functionalities of iVoteOnline:
   ![Home Page](Screenshots/1%20Home%20Page.png) 
   
 - **User Registration Page**
-  ![User Registration](path/to/screenshot1.png)
+  ![User Registration](Screenshots/3%20Registration%20page.png)
 
 - **Facial Recognition for Authentication**
-  ![Facial Recognition](path/to/screenshot2.png)
+  ![Facial Recognition](Screenshots/4%20Face%20Recognition%20page.png)
 
 - **Voting Interface**
-  ![Voting Interface](path/to/screenshot3.png)
+  ![Voting Interface](Screenshots/10%20user%20dashboard.png)
 
-- **Admin Dashboard**
-  ![Admin Dashboard](path/to/screenshot4.png)
+- **Admin Adding Candidates**
+  ![Admin Adding Candidates](Screenshots/8%20Adding%20candidates%20and%20electoralroll.png)
 
+- **View Results**
+  ![View Results](Screenshots/14%20View%20result.png)
 
 
 
@@ -106,10 +108,10 @@ We extend our heartfelt gratitude to our advisor, P. Anil, Assistant Professor, 
 
 ### Contributors
 
-- **Prashanth G** (20QK1A0548)
-- **Kodi Raju** (20QK1A0526)
-- **P. Laxmi Sruthi** (20QK1A0545)
-- **T. Pranitha** (20QK1A0562)
+- **Prashanth G** 
+- **Kodi Raju** 
+- **P. Laxmi Sruthi** 
+- **T. Pranitha** 
 
 ### License
 
